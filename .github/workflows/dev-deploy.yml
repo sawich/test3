@@ -1,0 +1,48 @@
+name: "Dev Deploy"
+
+on:
+  push:
+    branches: [ "dev" ]
+
+env:
+  DOTNET_MAJOR_VERSION: 8
+  VERSION: 1.0.0.0
+  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check
+      uses: actions/checkout@main
+      with:
+        lfs: "true"
+        submodules: "recursive"
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@main
+      with:
+        dotnet-version: ${{ env.DOTNET_MAJOR_VERSION }}
+        dotnet-quality: 'daily'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Setup Version
+      shell: pwsh
+      run: |
+        $date = Get-Date -format "yyyy.MMdd.HHmm"
+        echo "VERSION=${{ env.DOTNET_MAJOR_VERSION }}.$date-beta" >> $env:GITHUB_ENV
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release -p:Version=${{ env.VERSION }}
+
+    - name: Run Tests
+      run: dotnet test --no-restore --no-build --configuration Release
+
+    - name: Pack
+      run: dotnet pack --no-restore --no-build --configuration Release --include-symbols --include-source -p:Version=${{ env.VERSION }}
+
+    - name: Push to NuGet Feed
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ env.NUGET_API_KEY }}
