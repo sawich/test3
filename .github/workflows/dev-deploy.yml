@@ -21,10 +21,16 @@ jobs:
         submodules: "recursive"
         
     - name: Setup .NET
-      uses: actions/setup-dotnet@main
-      with:
-        dotnet-version: ${{ env.DOTNET_MAJOR_VERSION }}
-        dotnet-quality: 'daily'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -Proxy $env:HTTP_PROXY -ProxyUseDefaultCredentials -OutFile 'dotnet-install.ps1';
+        ./dotnet-install.ps1 -Runtime dotnet -Version 8 --quality preview
+
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@main
+    #   with:
+    #     dotnet-version: ${{ env.DOTNET_MAJOR_VERSION }}
+    #     dotnet-quality: 'daily'
 
     - name: Restore dependencies
       run: dotnet restore
