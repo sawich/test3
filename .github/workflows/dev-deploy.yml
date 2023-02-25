@@ -23,7 +23,7 @@ jobs:
     - name: Setup .NET
       shell: pwsh
       run: |
-        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -Proxy $env:HTTP_PROXY -ProxyUseDefaultCredentials -OutFile 'dotnet-install.ps1';
+        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
         ./dotnet-install.ps1 -Runtime dotnet -Version 8 --quality preview
 
     # - name: Setup .NET
