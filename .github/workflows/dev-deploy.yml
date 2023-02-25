@@ -24,7 +24,7 @@ jobs:
       shell: pwsh
       run: |
         Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
-        ./dotnet-install.ps1 -Runtime dotnet -Version 8 --quality preview
+        ./dotnet-install.ps1 -Runtime dotnet -Channel 8 -Quality preview
 
     # - name: Setup .NET
     #   uses: actions/setup-dotnet@main
